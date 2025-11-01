@@ -8,6 +8,7 @@ const resend = new Resend(process.env.RESEND_API_KEY!);
 const MAIL_FROM = process.env.MAIL_FROM!;     // e.g. "Digest <digest@yourdomain.com>"
 const MAIL_TO   = process.env.MAIL_TO!;
 const X_CLIENT_ID = process.env.X_CLIENT_ID!;
+const X_CLIENT_SECRET = process.env.X_CLIENT_SECRET!;
 const X_REFRESH_TOKEN = process.env.X_REFRESH_TOKEN!;
 const REDIRECT_URI = process.env.X_REDIRECT_URI || "http://localhost:8080/callback";
 
@@ -18,9 +19,13 @@ async function refreshAccessToken(): Promise<string> {
     client_id: X_CLIENT_ID,
     redirect_uri: REDIRECT_URI
   });
+  const auth = Buffer.from(`${X_CLIENT_ID}:${X_CLIENT_SECRET}`).toString('base64');
   const r = await fetch("https://api.twitter.com/2/oauth2/token", {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    headers: { 
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": `Basic ${auth}`
+    },
     body: form.toString()
   });
   if (!r.ok) throw new Error(`Token refresh failed: ${r.status} ${await r.text()}`);
