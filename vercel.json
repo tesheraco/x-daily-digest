@@ -1,5 +1,4 @@
 {
-  "functions": { "api/digest.ts": { "runtime": "@vercel/node@3" } },
   "crons": [
     { "path": "/api/digest", "schedule": "30 11 * * *" }
   ]
